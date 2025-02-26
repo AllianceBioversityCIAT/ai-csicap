@@ -169,3 +169,15 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Database folders
+db/
+*.db
+lancedb/
+.lancedb/
+vector_store/
+.vector_store/
+chroma/
+.chroma/
+faiss/
+.faiss/

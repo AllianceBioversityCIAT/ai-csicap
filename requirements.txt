@@ -1,0 +1,10 @@
+torch
+transformers
+lancedb
+PyPDF2
+python-docx
+pandas
+sentence_transformers
+pyarrow
+fitz
+pathlib
