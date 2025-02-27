@@ -10,6 +10,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from pathlib import Path
 from lancedb.pydantic import Vector, LanceModel
 from sentence_transformers import SentenceTransformer
+from pathlib import Path
 
 class Content(LanceModel):
     pageId: str
@@ -18,9 +19,11 @@ class Content(LanceModel):
     Namedocument: str
     modificationD: str
 
-DB_PATH = "../../db/csicapdb"
-DIRECTORY_PATH = "../data/files"
-PROCESSED_FILES_LOG = "../data/train/processed_files.txt"
+
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+DB_PATH = str(BASE_DIR / "db" / "csicapdb")
+DIRECTORY_PATH = str(BASE_DIR / "data" / "files")
+PROCESSED_FILES_LOG = str(BASE_DIR / "data" / "train" / "processed_files.txt")
 
 def load_processed_files():
     try:
@@ -34,7 +37,7 @@ def save_processed_file(file_path):
         f.write(f"{file_path}\n")
 
 db = lancedb.connect(DB_PATH)
-table_name = "documents"
+table_name = "files"
 vector_dim = 384
 
 if table_name not in db.table_names():
