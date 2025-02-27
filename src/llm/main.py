@@ -35,7 +35,12 @@ generator = pipeline("text-generation", model=model, tokenizer=tokenizer, device
 def generate_response(user_input):
     context = search_context(user_input)
     prompt = f"Context: {context}\nQuestion: {user_input}\nAnswer:"
-    output = generator(prompt, max_new_tokens=1000, do_sample=True, temperature=0.7, eos_token_id=tokenizer.eos_token_id)
+    output = generator(
+        prompt,
+        max_new_tokens=1000,
+        do_sample=True,
+        temperature=0.7
+    )
     if isinstance(output, list) and len(output) > 0:
         generated_text = output[0]['generated_text']
         answer_parts = generated_text.split("Answer:")
