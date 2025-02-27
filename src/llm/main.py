@@ -37,7 +37,7 @@ def generate_response(user_input):
     prompt = f"Context: {context}\nQuestion: {user_input}\nAnswer:"
     output = generator(
         prompt,
-        max_new_tokens=1000,
+        max_new_tokens=2048,
         do_sample=True,
         temperature=0.7
     )
