@@ -39,8 +39,14 @@ def generate_response(user_input):
         {"role": "user", "content": user_input}
     ]
     output = generator(messages, max_new_tokens=150, do_sample=True, temperature=0.7)
-    response = output[0]["generated_text"]
-    return response.split("user")[-1].strip()
+    if isinstance(output, list):
+        response = output[0]["generated_text"]
+        response_parts = response.split(user_input)
+        if len(response_parts) > 1:
+            return response_parts[-1].strip()
+        return response.strip()
+    return "I apologize, but I couldn't generate a proper response."
+
 
 if __name__ == '__main__':
     print("Chatbot ready. Type 'exit' to quit.")
