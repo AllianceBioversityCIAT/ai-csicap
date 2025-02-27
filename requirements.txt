@@ -8,3 +8,6 @@ sentence_transformers
 pyarrow
 fitz
 pathlib
+PyMuPDF
+langchain
+accelerate

@@ -1,9 +1,8 @@
 from pathlib import Path
 import lancedb
 from sentence_transformers import SentenceTransformer
-from transformers import pipeline
+from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
 import torch
-from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 DB_PATH = str(BASE_DIR / "db" / "csicapdb")
@@ -28,21 +27,20 @@ def search_context(query, top_k=3):
     context = " ".join(context_list)
     return context
 
-gen_model_name = "deepseek-ai/DeepSeek-R1-Zero"
-generator = pipeline("text-generation", model=gen_model_name, trust_remote_code=True)
+gen_model_name = "deepseek-ai/DeepSeek-R1-Distill-Llama-8B"
+tokenizer = AutoTokenizer.from_pretrained(gen_model_name)
+model = AutoModelForCausalLM.from_pretrained(gen_model_name)
+generator = pipeline("text-generation", model=model, tokenizer=tokenizer, device="cpu")
 
 def generate_response(user_input):
     context = search_context(user_input)
-    prompt = (
-        f"Use the following information to answer clearly and concisely in English:\n\n"
-        f"Context: {context}\n\n"
-        f"Question: {user_input}\n\n"
-        f"Answer:"
-    )
-    output = generator(prompt, max_new_tokens=150, truncation=True, num_return_sequences=1)
-    full_response = output[0]["generated_text"]
-    response = full_response.split("Answer:")[-1].strip()
-    return response
+    messages = [
+        {"role": "system", "content": f"Use this context to answer: {context}"},
+        {"role": "user", "content": user_input}
+    ]
+    output = generator(messages, max_new_tokens=150, do_sample=True, temperature=0.7)
+    response = output[0]["generated_text"]
+    return response.split("user")[-1].strip()
 
 if __name__ == '__main__':
     print("Chatbot ready. Type 'exit' to quit.")
