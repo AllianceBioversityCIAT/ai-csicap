@@ -34,17 +34,17 @@ generator = pipeline("text-generation", model=model, tokenizer=tokenizer, device
 
 def generate_response(user_input):
     context = search_context(user_input)
-    messages = [
-        {"role": "system", "content": f"Use this context to answer: {context}"},
-        {"role": "user", "content": user_input}
-    ]
-    output = generator(messages, max_new_tokens=150, do_sample=True, temperature=0.7)
-    if isinstance(output, list):
-        response = output[0]["generated_text"]
-        response_parts = response.split(user_input)
-        if len(response_parts) > 1:
-            return response_parts[-1].strip()
-        return response.strip()
+    prompt = f"Context: {context}\nQuestion: {user_input}\nAnswer:"
+    
+    output = generator(prompt, max_new_tokens=150, do_sample=True, temperature=0.7)
+    
+    if isinstance(output, list) and len(output) > 0:
+        generated_text = output[0]['generated_text']
+        answer_parts = generated_text.split("Answer:")
+        if len(answer_parts) > 1:
+            return answer_parts[-1].strip()
+        return generated_text.strip()
+    
     return "I apologize, but I couldn't generate a proper response."
 
 
