@@ -1,7 +1,7 @@
 from pathlib import Path
 import lancedb
 from sentence_transformers import SentenceTransformer
-from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
+from transformers import AutoTokenizer, AutoModelForCausalLM, TextIteratorStreamer, pipeline
 import torch
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
