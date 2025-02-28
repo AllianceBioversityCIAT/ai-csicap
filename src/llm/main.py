@@ -1,6 +1,5 @@
 import lancedb
 import torch
-import sys
 import time
 from pathlib import Path
 from sentence_transformers import SentenceTransformer
@@ -37,20 +36,18 @@ generator = pipeline("text-generation", model=model, tokenizer=tokenizer, device
 
 def generate_response(user_input):
     context = search_context(user_input)
-    prompt = f"Context: {context}\nQuestion: {user_input}\nAnswer:"
+    prompt = f"Context: {context}\nQuestion: {user_input}\nFinal Answer:"
     
     streamer = TextIteratorStreamer(tokenizer)
     generation_kwargs = dict(
         max_new_tokens=1024,
         do_sample=True,
         temperature=0.7,
+        repetition_penalty=1.2,
         streamer=streamer,
     )
     
-    thread = Thread(target=generator, kwargs={
-        "text_inputs": prompt,
-        **generation_kwargs
-    })
+    thread = Thread(target=generator, kwargs={"text_inputs": prompt, **generation_kwargs})
     thread.start()
     
     generated_text = ""
@@ -64,7 +61,7 @@ def generate_response(user_input):
     print()
     
     generated_text = generated_text.replace("<|begin▁of▁sentence|>", "").strip()
-    answer_parts = generated_text.split("Answer:")
+    answer_parts = generated_text.split("Final Answer:")
     if len(answer_parts) > 1:
         return answer_parts[-1].strip()
     return generated_text.strip()
