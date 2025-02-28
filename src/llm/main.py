@@ -41,7 +41,7 @@ def generate_response(user_input):
     
     streamer = TextIteratorStreamer(tokenizer)
     generation_kwargs = dict(
-        max_new_tokens=2048,
+        max_new_tokens=1024,
         do_sample=True,
         temperature=0.7,
         streamer=streamer,
@@ -56,11 +56,14 @@ def generate_response(user_input):
     generated_text = ""
     print("Chatbot: ", end="", flush=True)
     for new_text in streamer:
+        if "<|endoftext|>" in new_text:
+            break
         print(new_text, end="", flush=True)
         generated_text += new_text
         time.sleep(0.01)
     print()
     
+    generated_text = generated_text.replace("<|begin▁of▁sentence|>", "").strip()
     answer_parts = generated_text.split("Answer:")
     if len(answer_parts) > 1:
         return answer_parts[-1].strip()
