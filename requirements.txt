@@ -11,5 +11,3 @@ pathlib
 PyMuPDF
 langchain
 accelerate
-sys
-time

@@ -1,10 +1,11 @@
-from pathlib import Path
 import lancedb
-from sentence_transformers import SentenceTransformer
-from transformers import AutoTokenizer, AutoModelForCausalLM, TextIteratorStreamer, pipeline
 import torch
 import sys
 import time
+from pathlib import Path
+from sentence_transformers import SentenceTransformer
+from transformers import AutoTokenizer, AutoModelForCausalLM, TextIteratorStreamer, pipeline
+from threading import Thread
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 DB_PATH = str(BASE_DIR / "db" / "csicapdb")
