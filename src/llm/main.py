@@ -35,19 +35,31 @@ generator = pipeline("text-generation", model=model, tokenizer=tokenizer, device
 def generate_response(user_input):
     context = search_context(user_input)
     prompt = f"Context: {context}\nQuestion: {user_input}\nAnswer:"
-    output = generator(
-        prompt,
-        max_new_tokens=2048,
+    
+    streamer = TextIteratorStreamer(tokenizer)
+    generation_kwargs = dict(
+        prompt=prompt,
+        max_new_tokens=512,
         do_sample=True,
-        temperature=0.7
+        temperature=0.7,
+        streamer=streamer,
     )
-    if isinstance(output, list) and len(output) > 0:
-        generated_text = output[0]['generated_text']
-        answer_parts = generated_text.split("Answer:")
-        if len(answer_parts) > 1:
-            return answer_parts[-1].strip()
-        return generated_text.strip()
-    return "I apologize, but I couldn't generate a proper response."
+    
+    thread = Thread(target=generator, kwargs=generation_kwargs)
+    thread.start()
+    
+    generated_text = ""
+    print("Chatbot: ", end="", flush=True)
+    for new_text in streamer:
+        print(new_text, end="", flush=True)
+        generated_text += new_text
+        time.sleep(0.01)
+    print()
+    
+    answer_parts = generated_text.split("Answer:")
+    if len(answer_parts) > 1:
+        return answer_parts[-1].strip()
+    return generated_text.strip()
 
 if __name__ == '__main__':
     print("Chatbot ready. Type 'exit' to quit.")
