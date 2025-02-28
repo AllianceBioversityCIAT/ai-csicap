@@ -41,14 +41,16 @@ def generate_response(user_input):
     
     streamer = TextIteratorStreamer(tokenizer)
     generation_kwargs = dict(
-        prompt=prompt,
-        max_new_tokens=512,
+        max_new_tokens=2048,
         do_sample=True,
         temperature=0.7,
         streamer=streamer,
     )
     
-    thread = Thread(target=generator, kwargs=generation_kwargs)
+    thread = Thread(target=generator, kwargs={
+        "text_inputs": prompt,
+        **generation_kwargs
+    })
     thread.start()
     
     generated_text = ""
